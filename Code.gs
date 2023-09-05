@@ -31,6 +31,10 @@ var sourceCalendars = [                // The ics/ical urls that you want to get
 
 ];
 
+var calendarStartDates = new Map([        // set start dates before which events from the target calendars won't be imported
+  ["targetCalendar1", new Date("2023-07-01")],
+]);
+
 var howFrequent = 15;                     // What interval (minutes) to run this script on to check for new events.  Any integer can be used, but will be rounded up to 5, 10, 15, 30 or to the nearest hour after that.. 60, 120, etc. 1440 (24 hours) is the maximum value.  Anything above that will be replaced with 1440.
 var onlyFutureEvents = false;             // If you turn this to "true", past events will not be synced (this will also removed past events from the target calendar if removeEventsFromCalendar is true)
 var addEventsToCalendar = true;           // If you turn this to "false", you can check the log (View > Logs) to make sure your events are being read correctly before turning this on
@@ -153,9 +157,6 @@ function startSync(){
 
   PropertiesService.getUserProperties().setProperty('LastRun', new Date().getTime());
 
-  if (onlyFutureEvents)
-    startUpdateTime = new ICAL.Time.fromJSDate(new Date());
-
   //Disable email notification if no mail adress is provided
   emailSummary = emailSummary && email != "";
 
@@ -167,10 +168,17 @@ function startSync(){
     icsEventsIds = [];
     calendarEventsMD5s = [];
     recurringEvents = [];
+    startUpdateTime = undefined;
 
     targetCalendarName = calendar[0];
     var sourceCalendarURLs = calendar[1];
-    var vevents;
+    var events;
+
+    if (calendarStartDates.has(targetCalendarName))
+      startUpdateTime = new ICAL.Time.fromJSDate(calendarStartDates.get(targetCalendarName));
+
+    if (onlyFutureEvents)
+      startUpdateTime = new ICAL.Time.fromJSDate(new Date());
 
     //------------------------ Fetch URL items ------------------------
     var responses = fetchSourceCalendars(sourceCalendarURLs);

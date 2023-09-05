@@ -226,7 +226,7 @@ function parseResponses(responses){
     result = [].concat(allEvents, result);
   }
 
-  if (onlyFutureEvents){
+  if (startUpdateTime != undefined){
     result = result.filter(function(event){
       try{
         if (event.hasProperty('recurrence-id') || event.hasProperty('rrule') || event.hasProperty('rdate') || event.hasProperty('exdate')){
@@ -344,7 +344,7 @@ function processEvent(event, calendarTz){
 function createEvent(event, calendarTz){
   event.removeProperty('dtstamp');
   var icalEvent = new ICAL.Event(event, {strictExceptions: true});
-  if (onlyFutureEvents && checkSkipEvent(event, icalEvent)){
+  if (startUpdateTime != undefined && checkSkipEvent(event, icalEvent)){
     return;
   }
 
