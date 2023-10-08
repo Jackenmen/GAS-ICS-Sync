@@ -436,7 +436,7 @@ function createEvent(event, calendarTz){
   }
 
   if (event.hasProperty('summary')){
-    if (icalEvent.summary == "Free")
+    if (icalEvent.summary == "Free" || icalEvent.summary == "Away")
       return;
     newEvent.summary = "Unknown (" + icalEvent.summary + ")";
     newEvent.description = icalEvent.description;
