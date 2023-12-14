@@ -307,6 +307,9 @@ function processEvent(event, calendarTz){
     if (needsUpdate){
       if (modifyExistingEvents){
         oldEvent = calendarEvents[index]
+        if (!oldEvent.summary.startsWith("Unknown (") && newEvent.summary.startsWith("Unknown (")) {
+          newEvent.summary = oldEvent.summary;
+        }
         Logger.log("Updating existing event " + newEvent.extendedProperties.private["id"]);
         newEvent = callWithBackoff(function(){
           return Calendar.Events.update(newEvent, targetCalendarId, calendarEvents[index].id);
